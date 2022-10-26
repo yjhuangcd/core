@@ -137,14 +137,21 @@ class RoboticDynamics(SystemDynamics, AffineDynamics, PDDynamics):
         q, q_dot = self.proportional(x, t), self.derivative(x, t)
         H_ = self.H(q, q_dot).unsqueeze(1)
         D_ = self.D(q)
-        soln = lstsq(D_, H_).solution[:, :, 0]
+        # autolirpa does not support lstsq
+        if self.k == 1:
+            soln = (1 / D_ * H_)[:, :, 0]
+        else:
+            soln = lstsq(D_, H_).solution[:, :, 0]
         return cat([q_dot, -soln], dim=-1)
 
     def act(self, x, t):
         q = self.proportional(x, t)
         B_ = self.B(q)
         D_ = self.D(q)
-        soln = lstsq(D_, B_).solution
+        if self.k == 1:
+            soln = 1 / D_ * B_
+        else:
+            soln = lstsq(D_, B_).solution
         return cat([zeros((x.shape[0], self.k, self.m), dtype=soln.dtype),
                     soln], dim=1)
 

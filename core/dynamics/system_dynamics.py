@@ -5,6 +5,7 @@ from torchdiffeq import odeint, odeint_adjoint
 
 from .dynamics import Dynamics
 from ..util import default_fig
+from tqdm import tqdm
 
 class SystemDynamics(Dynamics):
     """Abstract dynamics class for simulation.
@@ -77,7 +78,7 @@ class SystemDynamics(Dynamics):
         xs = [x_0]
         us = []
 
-        for j in range(N - 1):
+        for j in tqdm(range(N - 1)):
             x = xs[j]
             t = ts[j]
             u = controller(x, t)

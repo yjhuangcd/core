@@ -9,7 +9,7 @@ from core.dynamics import SystemDynamics, AffineDynamics
 from core.util import default_fig
 from numpy import pi
 
-set_default_dtype(float64)
+# set_default_dtype(float64)
 
 model = th.tensor([44.798,  # mb
                    2.485,  # mw
@@ -26,15 +26,15 @@ model = th.tensor([44.798,  # mb
                    0.,  # FricCoeff 3.185188257847262
                    1.0e-3,  # velEps
                    1.225479467549329  # FricCoeff 1.225479467549329
-                   ], requires_grad=True)
+                   ])
 
 
-class Segway3D(SystemDynamics, AffineDynamics, Module):
+class Segway3DReduced(SystemDynamics, AffineDynamics, Module):
     def __init__(self):
-        SystemDynamics.__init__(self, 7, 2)
+        SystemDynamics.__init__(self, 4, 2)
         Module.__init__(self)
 
-    # input state: x, y, theta, v, theta_dot, phi, phi_dot
+    # input state: v, theta_dot, phi, phi_dot
     # void dynamics(const double t,
     #               const double X[:, STATE_LENGTH],
     #               const double U[INPUT_LENGTH],
@@ -73,31 +73,28 @@ class Segway3D(SystemDynamics, AffineDynamics, Module):
     #
     # /*  */
     def forward(self, X, U, t):
-        Fric = X[:, 3:4] - X[:, 6:7] * model[9];
+        Fric = X[:, 0:1] - X[:, 3:4] * model[9];
         Fric = model[12] * tanh(Fric / model[13]) + model[14] * Fric;
-        a_tmp = cos(X[:, 5:6]);
-        b_a_tmp = sin(X[:, 5:6]);
-        xDot_0 = X[:, 3:4] * cos(X[:, 2:3]);
-        xDot_1 = X[:, 3:4] * sin(X[:, 2:3]);
-        xDot_2 = X[:, 4:5];
+        a_tmp = cos(X[:, 2:3]);
+        b_a_tmp = sin(X[:, 2:3]);
         f_tmp = model[3] * model[3];
         b_f_tmp = model[9] * model[9];
         c_f_tmp = model[4] * model[4];
         d_f_tmp = model[0] * model[0];
         e_f_tmp = 4.0 * f_tmp;
         f_f_tmp = 4.0 * c_f_tmp;
-        g_f_tmp = X[:, 4:5] * X[:, 4:5];
-        h_f_tmp = X[:, 6:7] * X[:, 6:7];
+        g_f_tmp = X[:, 1:2] * X[:, 1:2];
+        h_f_tmp = X[:, 3:4] * X[:, 3:4];
         i_f_tmp = 4.0 * h_f_tmp + 3.0 * g_f_tmp;
-        j_f_tmp = cos(2.0 * X[:, 5:6]);
-        k_f_tmp = cos(3.0 * X[:, 5:6]);
+        j_f_tmp = cos(2.0 * X[:, 2:3]);
+        k_f_tmp = cos(3.0 * X[:, 2:3]);
         l_f_tmp = pow(model[3], 3.0);
         m_f_tmp = 4.0 * model[6] * model[4] * model[0];
         n_f_tmp = pow(model[4], 3.0);
-        o_f_tmp = sin(2.0 * X[:, 5:6]);
+        o_f_tmp = sin(2.0 * X[:, 2:3]);
         p_f_tmp = model[5] * model[4] * model[0] * model[9] * g_f_tmp;
         q_f_tmp = -model[4] * model[7] * model[0] * model[9] * g_f_tmp;
-        r_f_tmp = sin(3.0 * X[:, 5:6]);
+        r_f_tmp = sin(3.0 * X[:, 2:3]);
         s_f_tmp = 3.0 * f_tmp * model[4] * d_f_tmp * model[9] * g_f_tmp;
         t_f_tmp = -4.0 * model[3] * model[4];
         u_f_tmp = 2.0 * model[3] * model[4];
@@ -170,17 +167,17 @@ class Segway3D(SystemDynamics, AffineDynamics, Module):
         r_f_tmp = 2.0 * (model[7] + n_f_tmp);
         s_f_tmp = 2.0 * (model[5] + c_f_tmp);
         u_f_tmp = u_f_tmp * model[0];
-        xDot_4 = b_f_tmp * X[:, 4:5] * (
-                (-2.0 * model[3] * model[0] * X[:, 3:4] * a_tmp + t_f_tmp *
-                 model[0] * X[:, 6:7] * j_f_tmp) + -2.0 * (
-                        p_f_tmp * X[:, 3:4] + (((model[5] + -model[7])
-                                                + l_f_tmp) + m_f_tmp) * X[:, 6:7] * a_tmp) * b_a_tmp) * (
-                             1.0 / ((((q_f_tmp +
-                                       e_f_tmp * b_f_tmp) + r_f_tmp * b_f_tmp * (
-                                              a_tmp * a_tmp)) + s_f_tmp *
-                                     b_f_tmp * (
-                                             b_a_tmp * b_a_tmp)) + u_f_tmp * b_f_tmp * o_f_tmp));
-        xDot_5 = X[:, 6:7];
+        xDot_4 = b_f_tmp * X[:, 1:2] * (
+                (-2.0 * model[3] * model[0] * X[:, 0:1] * a_tmp + t_f_tmp *
+                 model[0] * X[:, 3:4] * j_f_tmp) + -2.0 * (
+                        p_f_tmp * X[:, 0:1] + (((model[5] + -model[7])
+                                                + l_f_tmp) + m_f_tmp) * X[:, 3:4] * a_tmp) * b_a_tmp) * (
+                         1.0 / ((((q_f_tmp +
+                                   e_f_tmp * b_f_tmp) + r_f_tmp * b_f_tmp * (
+                                          a_tmp * a_tmp)) + s_f_tmp *
+                                 b_f_tmp * (
+                                         b_a_tmp * b_a_tmp)) + u_f_tmp * b_f_tmp * o_f_tmp));
+        xDot_5 = X[:, 3:4];
         t_f_tmp = 4.0 * model[4] * model[11];
         k_f_tmp = k_f_tmp * model[2] * model[0];
         m_f_tmp = m_f_tmp * model[1] * b_f_tmp;
@@ -247,14 +244,7 @@ class Segway3D(SystemDynamics, AffineDynamics, Module):
         g_11 = model[8] * model[10] * (
                 1.0 / (((l_f_tmp + t_f_tmp * (a_tmp * a_tmp))
                         + j_f_tmp * (b_a_tmp * b_a_tmp)) + i_f_tmp));
-        g_0 = th.zeros_like(g_4)
-        g_1 = th.zeros_like(g_4)
-        g_2 = th.zeros_like(g_4)
         g_5 = th.zeros_like(g_4)
-
-        g_7 = th.zeros_like(g_10)
-        g_8 = th.zeros_like(g_10)
-        g_9 = th.zeros_like(g_10)
         g_12 = th.zeros_like(g_10)
 
         t_f_tmp = -2.0 * model[8] * (
@@ -263,10 +253,11 @@ class Segway3D(SystemDynamics, AffineDynamics, Module):
         g_6 = t_f_tmp;
         g_13 = t_f_tmp;
 
-        g_u1 = th.concat([g_0, g_1, g_2, g_3, g_4, g_5, g_6], dim=1)
-        g_u2 = th.concat([g_7, g_8, g_9, g_10, g_11, g_12, g_13], dim=1)
+        g_u1 = th.concat([g_3, g_4, g_5, g_6], dim=1)
+        g_u2 = th.concat([g_10, g_11, g_12, g_13], dim=1)
         g = th.stack([g_u1, g_u2], dim=2)
-        xdot = th.concat([xDot_0, xDot_1, xDot_2, xDot_3, xDot_4, xDot_5,
-                         xDot_6], dim=1)
-        gU = th.matmul(g, U.unsqueeze(dim=2)).squeeze()
+        xdot = th.concat([xDot_3, xDot_4, xDot_5,
+                          xDot_6], dim=1)
+        # gU = th.matmul(g, U.unsqueeze(dim=2)).squeeze()
+        gU = th.sum(g * U[:,None,:], dim=2)
         return xdot + gU

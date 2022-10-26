@@ -1,6 +1,7 @@
 from matplotlib.pyplot import figure
 from numpy import array
 import numpy as np
+import torch as th
 from torch import cos, float64, sin, stack, tensor
 from torch.nn import Module, Parameter
 from core.dynamics import FullyActuatedRoboticDynamics
@@ -13,21 +14,28 @@ class InvertedPendulum(FullyActuatedRoboticDynamics):
         self.params = Parameter(tensor([mass, l, g], dtype=float64))
 
     def D(self, q):
-        return (self.mass * (self.l ** 2))[None, None, None].expand(q.shape[0], -1, -1)
+        return th.ones(q.shape[0], 1, 1) * self.mass * (self.l ** 2)
+        # return (self.mass * (self.l ** 2))[None, None, None].expand(q.shape[0], -1, -1)
 
     def C(self, q, q_dot):
-        return tensor([[[0.0]]], dtype=float64).expand(q.shape[0], -1, -1)
+        return th.ones(q.shape[0], 1, 1) * 0.1
+        # return th.zeros(q.shape[0], 1, 1)
+        # return tensor([[[0.0]]], dtype=float64).expand(q.shape[0], -1, -1)
 
     def U(self, q):
-        theta = q[:, 0, None]
+        # theta = q[:, 0, None]
+        theta = q[:, 0:1]
         return self.mass * self.g * self.l * cos(theta)
 
     def G(self, q):
-        theta = q[:, 0, None]
+        # theta = q[:, 0, None]
+        # middle results in autolirpa cannot have size (batch,)
+        theta = q[:, 0:1]
         return -self.mass * self.g * self.l * sin(theta)
 
     def B(self, q):
-        return tensor([[[1]]], dtype=float64).expand(q.shape[0], -1, -1)
+        return th.ones(q.shape[0], 1, 1)
+        # return tensor([[[1]]], dtype=float64).expand(q.shape[0], -1, -1)
     
     @property
     def l(self):
@@ -51,7 +59,7 @@ class InvertedPendulum(FullyActuatedRoboticDynamics):
         ax.set_xlabel('$\\theta$ (rad)', fontsize=16)
         ax.set_ylabel('$\\dot{\\theta}$ (rad / sec)', fontsize=16)
         ax.set_xlim(-2 * np.pi, 2 * np.pi)
-        ax.set_ylim(-10, 10)
+        ax.set_ylim(-20, 20)
         ax.scatter(*xs.T, linewidth=1, color=color)
 
         return fig, ax
