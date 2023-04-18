@@ -11,3 +11,4 @@ from .segway_3d_system import Segway3D
 from .segway_3d_system_reduced import Segway3DReduced
 from .car_system import Car
 from .single_track_bicycle_system import SingleTrackBicycle
+from .building_system import Building
