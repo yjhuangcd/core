@@ -78,7 +78,8 @@ class SystemDynamics(Dynamics):
         xs = [x_0]
         us = []
 
-        for j in tqdm(range(N - 1)):
+        # for j in tqdm(range(N - 1)):
+        for j in range(N - 1):
             x = xs[j]
             t = ts[j]
             u = controller(x, t)

@@ -16,12 +16,12 @@ class Building(SystemDynamics, AffineDynamics, Module):
         # # temp, co2, Tamb, d
         # means = th.tensor([70., 600., 70., 50.]).reshape(1, 1, 4)
         # ranges = th.tensor([10., 200., 10., 50.]).reshape(1, 1, 4)
-        self.beta_1_prime = 1 / 133.
-        self.beta_1 = self.beta_1_prime * 10
-        self.beta_2 = self.beta_1
+        self.beta_1_prime = 1 / 133. * 0.1
+        self.beta_1 = self.beta_1_prime * 20
+        self.beta_2 = self.beta_1_prime
         self.c_in = (400. - 600.) / 200.
         self.g1 = 0.0005
-        self.g2 = 0.02 * 1000
+        self.g2 = 0.02 * 10
 
     def forward(self, x, u=0., t=0.):
         # states: temperature, co2, T_amb, d
