@@ -7,6 +7,7 @@ from .polynomial_system import PolynomialSystem
 
 from .linear_system import LinearSystemDynamics
 from .segway_system import Segway, Segway_params
+from .two_link_pendulum import TwoLinkPendulum, TwoLinkPendulum_params
 from .segway_3d_system import Segway3D
 from .segway_3d_system_reduced import Segway3DReduced
 from .car_system import Car
