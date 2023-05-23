@@ -66,17 +66,17 @@ class Segway_params(SystemDynamics, AffineDynamics, Module):
         y_dot = x[:, 2:3]
         y = x[:, 0:1]
         # extract system params from x
-        c1 = x[:, 3:4] * 1.8
-        c2 = x[:, 4:5] * 11.5
-        c3 = x[:, 5:6] * 10.9
-        c4 = x[:, 6:7] * 68.4
-        c5 = x[:, 7:8] * 1.2
-        d1 = x[:, 8:9] * 9.3
-        d2 = x[:, 9:10] * 58.8
-        d3 = x[:, 10:11] * 38.6
-        d4 = x[:, 11:12] * 234.5
-        d5 = x[:, 12:13] * 208.3
-        b = x[:, 13:14] * 24.7
+        c1 = x[:, 3:4]  # 1.8
+        c2 = x[:, 4:5]  # 11.5
+        c3 = x[:, 5:6]  # 10.9
+        c4 = x[:, 6:7]  # 68.4
+        c5 = x[:, 7:8]  # 1.2
+        d1 = x[:, 8:9]  # 9.3
+        d2 = x[:, 9:10]  # 58.8
+        d3 = x[:, 10:11]  # 38.6
+        d4 = x[:, 11:12]  # 234.5  # todo: typo, in the paper is 243.5
+        d5 = x[:, 12:13]  # 208.3
+        b = x[:, 13:14]  # 24.7
         return th.concat([
             y_dot,
             (cos(y) * (-c1 * u + c2 * x_dot + 9.8 * sin(
@@ -96,17 +96,17 @@ class Segway_params_sim(SystemDynamics, AffineDynamics, Module):
         y_dot = x[:, 2:3]
         y = x[:, 0:1]
         # extract system params from x
-        c1 = x[:, 3:4] * 1.8
-        c2 = x[:, 4:5] * 11.5
-        c3 = x[:, 5:6] * 10.9
-        c4 = x[:, 6:7] * 68.4
-        c5 = x[:, 7:8] * 1.2
-        d1 = x[:, 8:9] * 9.3
-        d2 = x[:, 9:10] * 58.8
-        d3 = x[:, 10:11] * 38.6
-        d4 = x[:, 11:12] * 234.5
-        d5 = x[:, 12:13] * 208.3
-        b = x[:, 13:14] * 24.7
+        c1 = x[:, 3:4]  # 1.8
+        c2 = x[:, 4:5]  # 11.5
+        c3 = x[:, 5:6]  # 10.9
+        c4 = x[:, 6:7]  # 68.4
+        c5 = x[:, 7:8]  # 1.2
+        d1 = x[:, 8:9]  # 9.3
+        d2 = x[:, 9:10]  # 58.8
+        d3 = x[:, 10:11]  # 38.6
+        d4 = x[:, 11:12]  # 234.5  # todo: typo, in the paper is 243.5
+        d5 = x[:, 12:13]  # 208.3
+        b = x[:, 13:14]  # 24.7
         zeros = th.zeros(y_dot.shape[0], 11)
         return th.concat([
             y_dot,
