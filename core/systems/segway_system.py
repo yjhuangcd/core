@@ -24,7 +24,7 @@ class Segway(SystemDynamics, AffineDynamics, Module):
         self.d1 = 9.3
         self.d2 = 58.8
         self.d3 = 38.6
-        self.d4 = 234.5  # todo: typo, in the paper is 243.5
+        self.d4 = 234.5
         self.d5 = 208.3
         self.b = 24.7
 
@@ -49,7 +49,7 @@ class Segway(SystemDynamics, AffineDynamics, Module):
         self.d1 = params[5]
         self.d2 = params[6]
         self.d3 = params[7]
-        self.d4 = params[8]  # todo: typo, in the paper is 243.5
+        self.d4 = params[8]
         self.d5 = params[9]
         self.b = params[10]
         return
