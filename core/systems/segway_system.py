@@ -29,16 +29,17 @@ class Segway(SystemDynamics, AffineDynamics, Module):
         self.b = 24.7
 
     def forward(self, x, u=0., t=0.):
-        x_dot = x[:, 1:2]
-        y_dot = x[:, 2:3]
-        y = x[:, 0:1]
+        # x = (angle, velocity, angular_velocity
+        x_dot = x[..., 1:2]
+        y_dot = x[..., 2:3]
+        y = x[..., 0:1]
         return th.concat([
             y_dot,
             (cos(y) * (-self.c1 * u + self.c2 * x_dot + 9.8 * sin(
                 y)) - self.c3 * u + self.c4 * x_dot - self.c5 * y_dot * y_dot * sin(y)) / (cos(y) - self.b),
             ((self.d1 * u - self.d2 * x_dot) * cos(y) + self.d3 * u - self.d4 * x_dot - sin(
                 y) * (self.d5 + y_dot * y_dot * cos(y))) / (cos(y) * cos(y) - self.b)
-        ], dim=1)
+        ], dim=-1)
 
     def change_params(self, params):
         self.c1 = params[0]
